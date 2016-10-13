@@ -471,9 +471,10 @@ void sduDataReceived(USBDriver *usbp, usbep_t ep) {
   chnAddFlagsI(sdup, CHN_INPUT_AVAILABLE);
 
   /* Posting the filled buffer in the queue.*/
-  ibqPostFullBufferI(&sdup->ibqueue,
-                     usbGetReceiveTransactionSizeX(sdup->config->usbp,
-                                                   sdup->config->bulk_out));
+  if (!ibqIsFullI(&sdup->ibqueue))
+    ibqPostFullBufferI(&sdup->ibqueue,
+                       usbGetReceiveTransactionSizeX(sdup->config->usbp,
+                                                     sdup->config->bulk_out));
 
   /* The endpoint cannot be busy, we are in the context of the callback,
      so a packet is in the buffer for sure. Trying to get a free buffer
